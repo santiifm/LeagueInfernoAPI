@@ -1,4 +1,6 @@
 using league_inferno_api.Data;
+using league_inferno_api.Interfaces;
+using league_inferno_api.Repository;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -7,9 +9,10 @@ var Configuration = builder.Configuration;
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IChampionsRepository, ChampionsRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -26,6 +29,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => "Hello World!");
+app.MapControllers();
 
 app.Run();
