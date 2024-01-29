@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace league_inferno_api.Data
 {
-    public class AppDbContext: DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<Champion> Champions { get; set; }
         public DbSet<Ability> Abilities { get; set; }
         public DbSet<Post> Posts { get; set; }
