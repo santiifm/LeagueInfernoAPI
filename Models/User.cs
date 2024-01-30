@@ -1,13 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
 namespace league_inferno_api.Models
 {
-    public class User
+    [Index(nameof(Username), IsUnique = true)]
+    public class User : BaseEntity
     {
-     public int Id { get; set; }   
-     public string Name { get; set; }
-     public string Role { get; set; }
-     public string Email { get; set; }
-     public string PasswordHash { get; set; }
-     public ICollection<Post> Posts { get; set; }
-     public ICollection<Comment> Comments { get; set; }
+        [Required]
+        public required string Username { get; set; }
+        [Required]
+        public required string Password { get; set; }
+        public int? RoleId { get; set; }
+        public Role? Role { get; set; }
+        public ICollection<Post>? Posts { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
     }
 }
