@@ -9,8 +9,7 @@ namespace league_inferno_api.DTOs
     public class ChampionDTO
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public IEnumerable<AbilityDTO> Abilities { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
     }
 }
