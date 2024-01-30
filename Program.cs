@@ -1,4 +1,5 @@
 using league_inferno_api.Data;
+using league_inferno_api.DTOs;
 using league_inferno_api.Interfaces;
 using league_inferno_api.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IChampionsRepository, ChampionsRepository>();
+builder.Services.AddScoped<IChampionAbilitiesRepository, ChampionAbilitiesRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -25,7 +27,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}   
 
 app.UseHttpsRedirection();
 
