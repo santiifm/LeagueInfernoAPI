@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using league_inferno_api.Interfaces;
 using league_inferno_api.Models;
 using System.Threading.Tasks;
+using league_inferno_api.DTOs;
 
 namespace league_inferno_api.Controllers
 {
@@ -14,7 +15,7 @@ namespace league_inferno_api.Controllers
         private readonly IChampionsRepository _champRep = champRep;
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Champion>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ChampionDTO>))]
         public async Task<IActionResult> GetChampions()
         {
             var champions = await _champRep.GetChampionsAsync();
@@ -26,6 +27,7 @@ namespace league_inferno_api.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ChampionDTO>))]
         public async Task<IActionResult> GetChampionById(int id)
         {
             var champion = await _champRep.GetChampionByIdAsync(id);
@@ -33,7 +35,7 @@ namespace league_inferno_api.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(champion); 
+            return Ok(champion);
         }
     }
 }

@@ -1,12 +1,9 @@
 using System.Data;
-using System.Runtime.Serialization;
-using league_inferno_api.Data;
-using league_inferno_api.Interfaces;
-using league_inferno_api.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
+using league_inferno_api.Data;
 using league_inferno_api.DTOs;
+using league_inferno_api.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace league_inferno_api.Repository
 {
@@ -19,19 +16,17 @@ namespace league_inferno_api.Repository
             var champions = await _context.Champions
                                           .Include(c => c.Abilities)
                                           .ToListAsync();
-        
+
+            if (champions == null)
+            {
+                throw new Exception($"No champions exist.");
+            }
+
             return champions.Select(champion => new ChampionDTO
             {
                 Id = champion.Id,
                 Name = champion.Name,
-                Description = champion.Description,
-                Abilities = champion.Abilities.Select(ability => new AbilityDTO
-                {
-                    Id = ability.Id,
-                    Name = ability.Name,
-                    Type = ability.Type,
-                    Description = ability.Description
-                })
+                Description = champion.Description
             });
         }
 
@@ -42,20 +37,14 @@ namespace league_inferno_api.Repository
                 .FirstOrDefaultAsync(c => c.Id == championId);
 
             if (champion == null)
-                return null;
-
+            {
+                throw new Exception($"Champion with Id {championId} not found.");
+            }
             return new ChampionDTO
             {
                 Id = champion.Id,
                 Name = champion.Name,
-                Description = champion.Description,
-                Abilities = champion.Abilities.Select(ability => new AbilityDTO
-                {
-                    Id = ability.Id,
-                    Name = ability.Name,
-                    Type = ability.Type,
-                    Description = ability.Description
-                }).ToList()
+                Description = champion.Description
             };
         }
     }
