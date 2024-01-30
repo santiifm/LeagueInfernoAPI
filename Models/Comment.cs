@@ -1,15 +1,15 @@
 namespace league_inferno_api.Models
 {
-    public class Comment
+    public class Comment : BaseEntity
     {
-        public int Id { get; set; }
-        public string Content { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
-        public int PostId { get; set; }
-        public Post Post { get; set; }
+        public required string Content { get; set; }
+        public required int UserId { get; set; }
+        public required User User { get; set; }
+        public required int PostId { get; set; }
+        public required Post Post { get; set; }
         public int? ParentCommentId { get; set; }
-        public Comment ParentComment { get; set; }
+        public Comment? ParentComment { get; set; }
+        public int? ChampionId { get; set; }
+        public Champion? Champion { get; set; }
     }
 }
