@@ -13,9 +13,9 @@ namespace league_inferno_api.Repository
 
         public async Task<ChampionAbilitiesDTO> GetChampionAbilitiesByIdAsync(int championId)
         {
-             var champion = await _context.Champions
-                                          .Include(c => c.Abilities)
-                                          .FirstOrDefaultAsync(c => c.Id == championId);
+            var champion = await _context.Champions
+                                         .Include(c => c.Abilities)
+                                         .FirstOrDefaultAsync(c => c.Id == championId);
 
             if (champion == null)
             {
