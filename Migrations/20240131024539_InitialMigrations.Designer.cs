@@ -12,8 +12,8 @@ using league_inferno_api.Data;
 namespace league_inferno_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240125165330_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240131024539_InitialMigrations")]
+    partial class InitialMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,6 +35,9 @@ namespace league_inferno_api.Migrations
 
                     b.Property<int>("ChampionId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -63,6 +66,9 @@ namespace league_inferno_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -84,9 +90,15 @@ namespace league_inferno_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChampionId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ParentCommentId")
                         .HasColumnType("integer");
@@ -98,6 +110,8 @@ namespace league_inferno_api.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChampionId");
 
                     b.HasIndex("ParentCommentId");
 
@@ -123,6 +137,9 @@ namespace league_inferno_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -147,13 +164,8 @@ namespace league_inferno_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -163,7 +175,14 @@ namespace league_inferno_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -181,6 +200,10 @@ namespace league_inferno_api.Migrations
 
             modelBuilder.Entity("league_inferno_api.Models.Comment", b =>
                 {
+                    b.HasOne("league_inferno_api.Models.Champion", "Champion")
+                        .WithMany()
+                        .HasForeignKey("ChampionId");
+
                     b.HasOne("league_inferno_api.Models.Comment", "ParentComment")
                         .WithMany()
                         .HasForeignKey("ParentCommentId");
@@ -197,6 +220,8 @@ namespace league_inferno_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Champion");
+
                     b.Navigation("ParentComment");
 
                     b.Navigation("Post");
@@ -207,7 +232,7 @@ namespace league_inferno_api.Migrations
             modelBuilder.Entity("league_inferno_api.Models.Post", b =>
                 {
                     b.HasOne("league_inferno_api.Models.Champion", "Champion")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("ChampionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -226,6 +251,8 @@ namespace league_inferno_api.Migrations
             modelBuilder.Entity("league_inferno_api.Models.Champion", b =>
                 {
                     b.Navigation("Abilities");
+
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("league_inferno_api.Models.Post", b =>
