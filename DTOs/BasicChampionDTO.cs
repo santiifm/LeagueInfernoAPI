@@ -6,11 +6,9 @@ using league_inferno_api.Models;
 
 namespace league_inferno_api.DTOs
 {
-    public class ChampionDTO
+    public class BasicChampionDTO
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
-        public IEnumerable<AbilityDTO>? Abilities { get; set; }
     }
 }
