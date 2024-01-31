@@ -1,3 +1,4 @@
+using league_inferno_api.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,16 +15,19 @@ namespace league_inferno_api.Services
             _configuration = configuration;
         }
 
-        public string GenerateToken(string username)
+        public string GenerateToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
+            
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
-                new Claim[] { new(ClaimTypes.Name, username) },
-                expires: DateTime.Now.AddMinutes(120),
+                new Claim[] {
+                    new(ClaimTypes.Name, user.Username),
+                    new(ClaimTypes.Role, user.Role)
+                },
+                expires: DateTime.Now.AddMinutes(45),
                 signingCredentials: credentials
             );
 
