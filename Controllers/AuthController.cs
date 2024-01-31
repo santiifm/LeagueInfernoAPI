@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace league_inferno_api.Controllers
 {
+    using BCrypt.Net;
+    using Microsoft.AspNetCore.Authorization;
+
     [ApiController]
     [Route("api/[Controller]")]
     public class AuthController : ControllerBase
@@ -20,21 +23,21 @@ namespace league_inferno_api.Controllers
         }
 
         [HttpPost("login")]
-        [ProducesResponseType(200, Type = typeof(string))]
-        public async Task<IActionResult> LoginAsync(UserDTO user)
+        [ProducesResponseType(200, Type = typeof(UserAuthDTO))]
+        public async Task<IActionResult> Login(UserDTO user)
         {
             try
             {
-                var authenticatedUser = await _userRepo.AuthenticateAsync(user.Username, user.Password);
+                var authenticatedUser = await _userRepo.AuthenticateAsync(user.Username);
 
-                if (authenticatedUser == null)
-                {
-                    return Unauthorized(new { message = "Invalid credentials" });
-                }
+                _ = BCrypt.Verify(user.Password, authenticatedUser.PasswordHash) ? true : throw new Exception($"Incorrect password");
 
-                var token = _tokenService.GenerateToken(authenticatedUser.Username);
+                var token = _tokenService.GenerateToken(authenticatedUser);
 
-                return Ok(new { token });
+                return Ok(new UserAuthDTO {
+                    Username = authenticatedUser.Username,
+                    Token = token
+                });
             }
             catch (Exception ex)
             {
@@ -44,24 +47,39 @@ namespace league_inferno_api.Controllers
 
         [HttpPost("register")]
         [ProducesResponseType(200, Type = typeof(string))]
-        public async Task<IActionResult> RegisterAsync(UserDTO user)
+        public async Task<IActionResult> Register(UserDTO user)
         {
             try
             {
-                var registeredUser = await _userRepo.RegisterAsync(user.Username, user.Password);
+                string passwordHash = BCrypt.HashPassword(user.Password);
 
-                if (registeredUser == null)
-                {
-                    return Unauthorized(new { message = "Invalid credentials" });
-                }
+                user.Role = Role.User;
+                user.Password = passwordHash;
 
-                var token = _tokenService.GenerateToken(user.Username);
+                await _userRepo.RegisterAsync(user);
 
-                return Ok(new { token });
+                return Ok($"Successfully registered, you can now login.");
             }
             catch (Exception ex)
             {
-                return StatusCode(403, new { message = ex.Message});
+                return StatusCode(403, new { message = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("assignrole")]
+        [ProducesResponseType(200, Type = typeof(UserAuthDTO))]
+        public async Task<IActionResult> AssignRoleAsync(UserRoleDTO userRole)
+        {
+            try
+            {
+            await _userRepo.AssignRoleAsync(userRole);
+
+            return Ok($"Succesfully changed user's {userRole.Username} role to {userRole.Role}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
             }
         }
     }
