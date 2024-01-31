@@ -44,10 +44,6 @@ namespace league_inferno_api.Repository
 
         public async Task AssignRoleAsync(UserRoleDTO userRole)
         {
-            if (!Enum.IsDefined(typeof(Role), userRole.Role))
-            {
-                throw new ArgumentException($"Invalid role: {userRole.Role}");
-            }
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userRole.Username);
 
             if (user == null)
