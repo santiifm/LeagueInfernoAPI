@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace league_inferno_api.Controllers
 {
+    using System.Reflection;
     using BCrypt.Net;
     using Microsoft.AspNetCore.Authorization;
 
@@ -71,11 +72,16 @@ namespace league_inferno_api.Controllers
         [ProducesResponseType(200, Type = typeof(UserAuthDTO))]
         public async Task<IActionResult> AssignRoleAsync(UserRoleDTO userRole)
         {
+            // This checks if the role provided is included in the Role Model by checking its properties
+            PropertyInfo[] properties = typeof(Role).GetProperties(BindingFlags.Public | BindingFlags.Static);
+            
+            if (!properties.Any(method => method.Name == userRole.Role))
+                return StatusCode(400, new { message = $"Invalid role: {userRole.Role}"});
+
             try
             {
             await _userRepo.AssignRoleAsync(userRole);
-
-            return Ok($"Succesfully changed user's {userRole.Username} role to {userRole.Role}");
+            return Ok($"Succesfully changed {userRole.Username}'s role to {userRole.Role}");
             }
             catch (Exception ex)
             {
