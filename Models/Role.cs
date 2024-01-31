@@ -1,9 +1,8 @@
-using System.Threading.Tasks;
-
 namespace league_inferno_api.Models
 {
-    public class Role : BaseEntity
+    public static class Role
     {
-        public required string Name { get; set; }
+        public static string Admin { get; set; } = "Admin";
+        public static string User { get; set; } = "User";
     }
 }
